@@ -15,11 +15,48 @@
             <img src="./assets/search.svg" alt="">
         </div>
         <div class="icons-cont">
-            <img src="./assets/filter_outline.svg" alt="">
-            <img src="./assets/plus_square.svg" alt="">
-            <img src="./assets/folder.svg" alt="">
+            <img src="./assets/filter_outline.svg" id="search-filter">
+            <img src="./assets/plus_square.svg" id="add-book-btn">
+            <img src="./assets/folder.svg" id="collections-btn">
         </div>
     </header>
+    <div class="add-book-cont none">
+        <div class="close-icon-cont">
+            <img src="./assets/close_big.svg" class="add-book-close-icon" alt="">
+        </div>
+        <h2 class="add-bk-head">Add New Book</h2>
+        <div class="book-det-inp">
+            <span class="placeholder-text">Book Name</span>
+            <input type="text">
+            <span class="inp-error"></span>
+        </div>
+        <div class="book-det-inp">
+            <span class="placeholder-text">Authour Name</span>
+            <input type="text">
+            <span class="inp-error">error</span>
+        </div>
+        <div class="pages-inp-cont">
+            <div class="book-det-inp">
+                <span class="placeholder-text">Pages Comp</span>
+                <input type="number">
+                <span class="inp-error">Enter Total Number of pages</span>
+            </div>
+            /
+            <div class="book-det-inp">
+                <span class="placeholder-text">Total Pages</span>
+                <input type="number">
+                <span class="inp-error"></span>
+            </div>
+        </div>
+        <div class="book-com-status-inp">
+            <input type="checkbox" name="" id="status-chk">
+            <span>Have You Completed Reading this Book? </span>
+        </div>
+        <button>
+            Add Book
+        </button>
+    </div>
+    <div class="opacity-cont"></div>
     <section class="main-books-cont">
         <div class="book-card">
             <h1 class="book-name">Harry Potter Harry Potter</h1>
@@ -133,4 +170,5 @@
         </div>
     </section>
 </body>
+<script src="./main.js"></script>
 </html>
