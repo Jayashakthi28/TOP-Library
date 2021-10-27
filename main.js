@@ -1,8 +1,55 @@
-/*****Add book card functionalities******/
-
 let upBk_Flag=true;
 let oldBook=null;
+const pg_num_inp_cont=document.querySelectorAll('.pages-inp-cont .book-det-inp');
+let library=null;
+let localBookArr=JSON.parse(localStorage.getItem("library"));
+(localBookArr!==null)?library=new libraryCls(localBookArr):library=new libraryCls();
 
+/***************************Classes And Prototypes*************************/
+function bookCreator(){
+    this.name=arguments[0];
+    this.authour=arguments[1];
+    this.comp_pages=arguments[2];
+    this.tot_pages=arguments[3];
+    this.comp_flag=arguments[4];
+}
+
+function libraryCls(book=[],group=[]){
+    this.book=book;
+    this.group=group
+}
+
+libraryCls.prototype.addBook=function(book){
+    this.book.push(book);
+    let temp=JSON.stringify(this.book);
+    localStorage.setItem("library",temp);
+}
+
+libraryCls.prototype.remBook=function(book){
+    this.book=this.book.filter((bk)=>{
+        return(bk!==book);
+    });
+    console.log(this.book);
+    let temp=JSON.stringify(this.book);
+    localStorage.setItem("library",temp);
+}
+
+libraryCls.prototype.updateBook=function(newBook,oldBook){
+    let i=this.book.findIndex((b)=>{
+        return b===oldBook;
+    });
+    this.book[i]=newBook;
+    let temp=JSON.stringify(this.book);
+    localStorage.setItem("library",temp);
+    mainBookFiller();
+}
+
+mainBookFiller();
+
+/***************************************************************************/
+
+
+/**************************************DOM*****************************************/
 
 document.querySelectorAll(".book-det-inp").forEach((d) => {
   const inp = d.querySelector("input");
@@ -38,24 +85,16 @@ document.querySelectorAll(".book-det-inp").forEach((d) => {
   });
 });
 
-function addBookToggler(){
-    document.querySelector('.opacity-cont').classList.toggle("opacity-rem-bk-cont");
-    document.querySelector('.add-book-cont').classList.toggle('none');
-}
-
 document.querySelector('#add-book-btn').addEventListener("click",()=>{
     upBk_Flag=false;
     document.querySelector('.add-book-cont button').textContent="Add Book";
     addBookToggler();
 });
 
-
 document.querySelector('.add-book-cont .close-icon-cont img').addEventListener("click",addBookToggler);
 
 document.querySelector('.opacity-cont').addEventListener("click",addBookToggler);
 
-/******************************************* */
-const pg_num_inp_cont=document.querySelectorAll('.pages-inp-cont .book-det-inp');
 pg_num_inp_cont[0].querySelector('input').addEventListener("input",()=>{
     if(pg_num_inp_cont[1].querySelector('input').value.length===0){
         pg_num_inp_cont[0].querySelector('input').value="";
@@ -63,7 +102,39 @@ pg_num_inp_cont[0].querySelector('input').addEventListener("input",()=>{
     }
 })
 
-/****************************************** */
+document.querySelector('.add-book-cont button').addEventListener("click",submitTrigger);
+
+function bookCardEventListener(card,book){
+    const mainCont=document.querySelector(".main-books-cont");
+    card.querySelector("#book-del-btn").addEventListener("click",()=>{
+        mainCont.removeChild(card);
+        library.remBook(book);
+    });
+
+    card.querySelector("#book-edit").addEventListener("click",()=>{
+        upBk_Flag=true;
+        document.querySelectorAll(".book-det-inp").forEach((d,i) => {
+            let inp=d.querySelector("input");
+            if(i===0) inp.value=book['name'];
+            if(i===1) inp.value=book['authour'];
+            if(i===2) inp.value=book['comp_pages'];
+            if(i===3) inp.value=book['tot_pages'];
+        });
+        document.querySelector('.book-com-status-inp input').checked=book['comp_flag'];
+        oldBook=book;
+        document.querySelector('.add-book-cont button').textContent="Update Book";
+        addBookToggler();
+    })
+}
+
+/*********************************************************************************/
+
+/******************************************FUNCTIONS AND CALLBACKS************************************ */
+function addBookToggler(){
+    document.querySelector('.opacity-cont').classList.toggle("opacity-rem-bk-cont");
+    document.querySelector('.add-book-cont').classList.toggle('none');
+}
+
 function submitTrigger(){
     document.querySelectorAll('.book-det-inp').forEach(d=>{
         if(d.querySelector('input').value.length===0){
@@ -101,53 +172,6 @@ function submitTrigger(){
     addBookToggler();
 }
 
-
-document.querySelector('.add-book-cont button').addEventListener("click",submitTrigger);
-
-
-
-/******************************************* */
-
-function bookCreator(){
-    this.name=arguments[0];
-    this.authour=arguments[1];
-    this.comp_pages=arguments[2];
-    this.tot_pages=arguments[3];
-    this.comp_flag=arguments[4];
-}
-
-
-
-
-function libraryCls(book=[],group=[]){
-    this.book=book;
-    this.group=group
-}
-
-
-function bookCardEventListener(card,book){
-    const mainCont=document.querySelector(".main-books-cont");
-    card.querySelector("#book-del-btn").addEventListener("click",()=>{
-        mainCont.removeChild(card);
-        library.remBook(book);
-    });
-
-    card.querySelector("#book-edit").addEventListener("click",()=>{
-        upBk_Flag=true;
-        document.querySelectorAll(".book-det-inp").forEach((d,i) => {
-            let inp=d.querySelector("input");
-            if(i===0) inp.value=book['name'];
-            if(i===1) inp.value=book['authour'];
-            if(i===2) inp.value=book['comp_pages'];
-            if(i===3) inp.value=book['tot_pages'];
-        });
-        document.querySelector('.book-com-status-inp input').checked=book['comp_flag'];
-        oldBook=book;
-        document.querySelector('.add-book-cont button').textContent="Update Book";
-        addBookToggler();
-    })
-}
-
 function bookFiller(book){
     const element=document.createElement("div");
     element.classList.add("book-card");
@@ -164,40 +188,17 @@ function bookFiller(book){
     bookCardEventListener(element,book);
 }
 
-
 function mainBookFiller(){
     document.querySelector('.main-books-cont').innerHTML="";
     library.book.forEach(book=>{
         bookFiller(book);
     })
 }
+/******************************************* */
 
-libraryCls.prototype.addBook=function(book){
-    this.book.push(book);
-    let temp=JSON.stringify(this.book);
-    localStorage.setItem("library",temp);
-}
 
-libraryCls.prototype.remBook=function(book){
-    this.book=this.book.filter((bk)=>{
-        return(bk!==book);
-    });
-    console.log(this.book);
-    let temp=JSON.stringify(this.book);
-    localStorage.setItem("library",temp);
-}
 
-libraryCls.prototype.updateBook=function(newBook,oldBook){
-    let i=this.book.findIndex((b)=>{
-        return b===oldBook;
-    });
-    this.book[i]=newBook;
-    let temp=JSON.stringify(this.book);
-    localStorage.setItem("library",temp);
-    mainBookFiller();
-}
 
-let library;
-let localBookArr=JSON.parse(localStorage.getItem("library"));
-(localBookArr!==null)?library=new libraryCls(localBookArr):library=new libraryCls();
-mainBookFiller();
+
+
+
