@@ -3,6 +3,15 @@
     src: url('./assets/LondrinaSolid-Regular.ttf');
 }
 
+/* @font-face {
+    font-family: 'Londrina-Light';
+    src: url('./assets/LondrinaSolid-Thin.ttf');
+} */
+
+@font-face {
+    font-family: 'DM-Sans';
+    src: url('./assets/DMSans-Medium.ttf');
+}
 :root{
     --green:#6FFFE9;
     --blue:#1C2541;
@@ -24,6 +33,9 @@ header{
     align-items: center;
     padding: 0.5rem;
     overflow: hidden;
+    position: sticky;
+    top: 0;
+    left: 0;
 }
 
 header h1{
@@ -97,6 +109,21 @@ body{
     overflow: auto;
 }
 
+
+.opacity-cont{
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    display: none;
+}
+
+.opacity-rem-bk-cont{
+    display: flex !important;
+    background-color: #0b132bee;
+}
+
+
+
 .book-card{
     background-color: var(--green);
     border-radius: 2rem;
@@ -127,11 +154,13 @@ body{
 }
 
 .book-card .authour-name{
-    font-weight: 50;
+    font-family: 'DM-Sans';
+    font-weight: 600;
     font-size: 1.5rem;
 }
 
 .authour-name::before{
+    font-family: 'DM-Sans';
     content: "~ ";
 }
 
@@ -139,6 +168,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: 'DM-Sans';
     font-size: 1.5rem;
 }
 
@@ -146,15 +176,17 @@ body{
     outline: none;
     border: none;
     background-color: transparent;
+    font-family: 'DM-Sans';
     width: 60px;
     text-align: right;
-    font-size: 1.5rem;
-    font-weight: 50;
+    font-size: 1.3rem;
+    font-weight: 600;
 }
 
 .page-cnt span{
-    font-size: 1.5rem;
-    font-weight: 50;
+    font-size: 1.3rem;
+    font-weight: 600;
+    font-family: 'DM-Sans';
 }
 
 .page-cnt input:focus{
@@ -194,4 +226,122 @@ body{
 
 .book-card:hover .book-icons-cnt img{
     transform: translateY(0%);
+}
+
+.add-book-cont{
+    background-color: var(--blue-dark);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    z-index: 9;
+    position: fixed;
+    min-width: 300px;
+    width: 500px;
+    height: 500px;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    padding: 1rem;
+    box-shadow: 0px 0px 15px var(--green);
+    border-radius: 20px;
+}
+
+.close-icon-cont{
+    position: relative;
+    width: 100%;
+    height: 0px;
+}
+
+.close-icon-cont img{
+    width: 30px;
+    position: absolute;
+    right: 0;
+}
+
+.add-book-cont h2{
+    font-size: 3rem;
+    margin: 1rem;
+}
+
+.book-det-inp{
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    font-size: 2rem;
+    width: 100%;
+}
+
+.book-det-inp input{
+    border: 0;
+    color: var(--green);
+    font-size: 2rem;
+    outline: 0;
+    border-bottom: 2px solid var(--green);
+    background-color: transparent;
+    width: 100%;
+    position: relative;
+}
+
+.book-det-inp input:focus{
+    border-style: dashed;
+}
+
+.inp-error{
+    height: 20px;
+    font-size: 0.8rem;
+    font-family: 'DM-Sans';
+}
+
+.placeholder-text{
+    position: absolute;
+    left: 0;
+    transition: all 0.4s ease;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.placeholder-text-up{
+    font-size: 1rem;
+    transform: translateY(-110%);
+}
+
+.pages-inp-cont{
+    display: flex;
+    font-size: 2rem;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.book-com-status-inp{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.book-com-status-inp span{
+    font-size: 1.2rem;
+    margin: 1rem 0.5rem;
+}
+
+.book-com-status-inp input{
+    height: 1.2rem;
+    cursor: pointer;
+}
+
+.add-book-cont button{
+    outline: 0;
+    border: 0;
+    padding: 0.5rem 2rem;
+    font-size: 1.5rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    background-color: var(--green);
+    color: var(--blue-dark);
+}
+
+.none{
+    display: none;
 }
