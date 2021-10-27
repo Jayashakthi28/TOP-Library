@@ -68,5 +68,46 @@ document.querySelector('.add-book-cont button').addEventListener("click",()=>{
         pg_num_inp_cont[0].querySelector(".inp-error").textContent="Value must be less than total Pages";
         return;
     }
+
+    
+
+    let bkName=document.querySelectorAll('.book-det-inp input')[0].value;
+    let AuthName=document.querySelectorAll('.book-det-inp input')[1].value;
+    let comPages=document.querySelectorAll('.book-det-inp input')[2].value;
+    let totPages=document.querySelectorAll('.book-det-inp input')[3].value;
+    let comFlag=document.querySelector('.book-com-status-inp input').checked;
+    const newBook=new book(bkName,AuthName,comPages,totPages,comFlag);
+    console.log(newBook);
+    myLibrary.push(newBook);
+    bookFiller(newBook);
     addBookToggler();
 })
+
+
+
+/******************************************* */
+let myLibrary=[];
+
+function book(){
+    this.name=arguments[0];
+    this.authour=arguments[1];
+    this.comp_pages=arguments[2];
+    this.tot_pages=arguments[3];
+    this.comp_flag=arguments[4];
+}
+
+function bookFiller(book){
+    const element=document.createElement("div");
+    element.classList.add("book-card");
+    element.innerHTML+=` <h1 class="book-name">${book['name']}</h1>
+    <h2 class="authour-name">${book['authour']}</h2>
+    <div class="page-cnt"><input type="number" value="${book['comp_pages']}">/&nbsp;<span class="tot-page">${book["tot_pages"]}</span></div>
+    <button class="book-status-btn">${(book['comp_flag'])?"Completed":"Not Completed"}</button>
+    <div class="book-icons-cnt">
+        <img src="./assets/folder_plus.svg" alt="">
+        <img src="./assets/edit.svg" alt="">
+        <img src="./assets/trash_full.svg" alt="">
+    </div>`;
+    document.querySelector(".main-books-cont").appendChild(element);
+}
+
