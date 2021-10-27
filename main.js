@@ -1,5 +1,9 @@
 /*****Add book card functionalities******/
 
+let upBk_Flag=true;
+let oldBook=null;
+
+
 document.querySelectorAll(".book-det-inp").forEach((d) => {
   const inp = d.querySelector("input");
   inp.addEventListener("input",()=>{
@@ -39,7 +43,11 @@ function addBookToggler(){
     document.querySelector('.add-book-cont').classList.toggle('none');
 }
 
-document.querySelector('#add-book-btn').addEventListener("click",addBookToggler);
+document.querySelector('#add-book-btn').addEventListener("click",()=>{
+    upBk_Flag=false;
+    document.querySelector('.add-book-cont button').textContent="Add Book";
+    addBookToggler();
+});
 
 
 document.querySelector('.add-book-cont .close-icon-cont img').addEventListener("click",addBookToggler);
@@ -56,7 +64,7 @@ pg_num_inp_cont[0].querySelector('input').addEventListener("input",()=>{
 })
 
 /****************************************** */
-document.querySelector('.add-book-cont button').addEventListener("click",()=>{
+function submitTrigger(){
     document.querySelectorAll('.book-det-inp').forEach(d=>{
         if(d.querySelector('input').value.length===0){
             d.querySelector(".inp-error").textContent="Please Fill Out this field";
@@ -77,17 +85,28 @@ document.querySelector('.add-book-cont button').addEventListener("click",()=>{
     let totPages=document.querySelectorAll('.book-det-inp input')[3].value;
     let comFlag=document.querySelector('.book-com-status-inp input').checked;
     const newBook=new bookCreator(bkName,AuthName,comPages,totPages,comFlag);
-    console.log(newBook);
+    
+    document.querySelectorAll('.book-det-inp').forEach(d=>{
+        d.querySelector('input').value="";
+    })
+    document.querySelector('.book-com-status-inp input').checked=false;
+    
+    if(upBk_Flag){
+        library.updateBook(newBook,oldBook);
+        addBookToggler();
+        return;
+    }
     library.addBook(newBook);
     bookFiller(newBook);
     addBookToggler();
-})
+}
+
+
+document.querySelector('.add-book-cont button').addEventListener("click",submitTrigger);
 
 
 
 /******************************************* */
-let library=new libraryCls();
-console.log(library);
 
 function bookCreator(){
     this.name=arguments[0];
@@ -96,6 +115,8 @@ function bookCreator(){
     this.tot_pages=arguments[3];
     this.comp_flag=arguments[4];
 }
+
+
 
 
 function libraryCls(book=[],group=[]){
@@ -109,6 +130,21 @@ function bookCardEventListener(card,book){
     card.querySelector("#book-del-btn").addEventListener("click",()=>{
         mainCont.removeChild(card);
         library.remBook(book);
+    });
+
+    card.querySelector("#book-edit").addEventListener("click",()=>{
+        upBk_Flag=true;
+        document.querySelectorAll(".book-det-inp").forEach((d,i) => {
+            let inp=d.querySelector("input");
+            if(i===0) inp.value=book['name'];
+            if(i===1) inp.value=book['authour'];
+            if(i===2) inp.value=book['comp_pages'];
+            if(i===3) inp.value=book['tot_pages'];
+        });
+        document.querySelector('.book-com-status-inp input').checked=book['comp_flag'];
+        oldBook=book;
+        document.querySelector('.add-book-cont button').textContent="Update Book";
+        addBookToggler();
     })
 }
 
@@ -121,14 +157,25 @@ function bookFiller(book){
     <button class="book-status-btn">${(book['comp_flag'])?"Completed":"Not Completed"}</button>
     <div class="book-icons-cnt">
         <img src="./assets/folder_plus.svg" alt="">
-        <img src="./assets/edit.svg" alt="">
+        <img src="./assets/edit.svg" id="book-edit" alt="">
         <img src="./assets/trash_full.svg" id="book-del-btn" alt="">
     </div>`;
     document.querySelector(".main-books-cont").appendChild(element);
     bookCardEventListener(element,book);
 }
+
+
+function mainBookFiller(){
+    document.querySelector('.main-books-cont').innerHTML="";
+    library.book.forEach(book=>{
+        bookFiller(book);
+    })
+}
+
 libraryCls.prototype.addBook=function(book){
     this.book.push(book);
+    let temp=JSON.stringify(this.book);
+    localStorage.setItem("library",temp);
 }
 
 libraryCls.prototype.remBook=function(book){
@@ -136,5 +183,21 @@ libraryCls.prototype.remBook=function(book){
         return(bk!==book);
     });
     console.log(this.book);
+    let temp=JSON.stringify(this.book);
+    localStorage.setItem("library",temp);
 }
 
+libraryCls.prototype.updateBook=function(newBook,oldBook){
+    let i=this.book.findIndex((b)=>{
+        return b===oldBook;
+    });
+    this.book[i]=newBook;
+    let temp=JSON.stringify(this.book);
+    localStorage.setItem("library",temp);
+    mainBookFiller();
+}
+
+let library;
+let localBookArr=JSON.parse(localStorage.getItem("library"));
+(localBookArr!==null)?library=new libraryCls(localBookArr):library=new libraryCls();
+mainBookFiller();
