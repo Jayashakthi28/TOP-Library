@@ -76,9 +76,9 @@ document.querySelector('.add-book-cont button').addEventListener("click",()=>{
     let comPages=document.querySelectorAll('.book-det-inp input')[2].value;
     let totPages=document.querySelectorAll('.book-det-inp input')[3].value;
     let comFlag=document.querySelector('.book-com-status-inp input').checked;
-    const newBook=new book(bkName,AuthName,comPages,totPages,comFlag);
+    const newBook=new bookCreator(bkName,AuthName,comPages,totPages,comFlag);
     console.log(newBook);
-    myLibrary.push(newBook);
+    library.addBook(newBook);
     bookFiller(newBook);
     addBookToggler();
 })
@@ -86,14 +86,30 @@ document.querySelector('.add-book-cont button').addEventListener("click",()=>{
 
 
 /******************************************* */
-let myLibrary=[];
+let library=new libraryCls();
+console.log(library);
 
-function book(){
+function bookCreator(){
     this.name=arguments[0];
     this.authour=arguments[1];
     this.comp_pages=arguments[2];
     this.tot_pages=arguments[3];
     this.comp_flag=arguments[4];
+}
+
+
+function libraryCls(book=[],group=[]){
+    this.book=book;
+    this.group=group
+}
+
+
+function bookCardEventListener(card,book){
+    const mainCont=document.querySelector(".main-books-cont");
+    card.querySelector("#book-del-btn").addEventListener("click",()=>{
+        mainCont.removeChild(card);
+        library.remBook(book);
+    })
 }
 
 function bookFiller(book){
@@ -106,8 +122,19 @@ function bookFiller(book){
     <div class="book-icons-cnt">
         <img src="./assets/folder_plus.svg" alt="">
         <img src="./assets/edit.svg" alt="">
-        <img src="./assets/trash_full.svg" alt="">
+        <img src="./assets/trash_full.svg" id="book-del-btn" alt="">
     </div>`;
     document.querySelector(".main-books-cont").appendChild(element);
+    bookCardEventListener(element,book);
+}
+libraryCls.prototype.addBook=function(book){
+    this.book.push(book);
+}
+
+libraryCls.prototype.remBook=function(book){
+    this.book=this.book.filter((bk)=>{
+        return(bk!==book);
+    });
+    console.log(this.book);
 }
 
