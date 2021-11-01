@@ -1,5 +1,6 @@
 let upBk_Flag=true;
 let oldBook=null;
+let oldBookCard=null;
 const pg_num_inp_cont=document.querySelectorAll('.pages-inp-cont .book-det-inp');
 let library=null;
 let localBookArr=JSON.parse(localStorage.getItem("library"));
@@ -41,7 +42,16 @@ libraryCls.prototype.updateBook=function(newBook,oldBook){
     this.book[i]=newBook;
     let temp=JSON.stringify(this.book);
     localStorage.setItem("library",temp);
-    mainBookFiller();
+    bookReplacer(newBook);
+}
+
+libraryCls.prototype.bookCardUpdater=function(book,status,flag){
+    let i=this.book.findIndex((b)=>{
+        return b===book;
+    });
+    this.book[i][flag]=status;
+    let temp=JSON.stringify(this.book);
+    localStorage.setItem("library",temp);
 }
 
 mainBookFiller();
@@ -57,6 +67,15 @@ document.querySelectorAll(".book-det-inp").forEach((d) => {
     d.querySelector(".placeholder-text").classList.add("placeholder-text-up");
     d.querySelector('.inp-error').textContent="";
   })
+
+  if (inp.value.length === 0) {
+    d.querySelector(".placeholder-text").classList.toggle(
+      "placeholder-text-up"
+    );
+  } else {
+    d.querySelector(".placeholder-text").classList.add("placeholder-text-up");
+  }
+
   d.addEventListener("click", () => {
     if (inp.value.length === 0) {
       d.querySelector(".placeholder-text").classList.toggle(
@@ -113,6 +132,7 @@ function bookCardEventListener(card,book){
 
     card.querySelector("#book-edit").addEventListener("click",()=>{
         upBk_Flag=true;
+        oldBookCard=card;
         document.querySelectorAll(".book-det-inp").forEach((d,i) => {
             let inp=d.querySelector("input");
             if(i===0) inp.value=book['name'];
@@ -124,6 +144,37 @@ function bookCardEventListener(card,book){
         oldBook=book;
         document.querySelector('.add-book-cont button').textContent="Update Book";
         addBookToggler();
+    });
+
+    card.querySelector('button').addEventListener("click",()=>{
+        if(card.querySelector('button').textContent==='Completed'){
+            card.querySelector('button').textContent='Not Completed';
+            library.bookCardUpdater(book,false,'comp_flag');
+        }
+        else{
+            card.querySelector('button').textContent='Completed';
+            library.bookCardUpdater(book,true,'comp_flag');
+        }
+    });
+
+    card.querySelector('input').addEventListener("input",()=>{
+        let tot_page=card.querySelector('.tot-page').textContent;
+        let val=card.querySelector("input").value;
+        if(+val<0){
+            card.querySelector("input").value=0;
+            val=card.querySelector("input").value;
+        }
+        if(+val>=+tot_page){
+            card.querySelector("input").value=+tot_page;
+            val=card.querySelector("input").value;
+            card.querySelector("button").textContent="Completed";
+            library.bookCardUpdater(book,true,'comp_flag');
+        }
+        else{
+            card.querySelector("button").textContent="Not Completed";
+            library.bookCardUpdater(book,false,'comp_flag');
+        }
+        library.bookCardUpdater(book,val,'comp_pages');
     })
 }
 
@@ -170,6 +221,23 @@ function submitTrigger(){
     library.addBook(newBook);
     bookFiller(newBook);
     addBookToggler();
+}
+
+function bookReplacer(book){
+    const element=document.createElement("div");
+    element.classList.add("book-card");
+    element.innerHTML+=` <h1 class="book-name">${book['name']}</h1>
+    <h2 class="authour-name">${book['authour']}</h2>
+    <div class="page-cnt"><input type="number" value="${book['comp_pages']}">/&nbsp;<span class="tot-page">${book["tot_pages"]}</span></div>
+    <button class="book-status-btn">${(book['comp_flag'])?"Completed":"Not Completed"}</button>
+    <div class="book-icons-cnt">
+        <img src="./assets/folder_plus.svg" alt="">
+        <img src="./assets/edit.svg" id="book-edit" alt="">
+        <img src="./assets/trash_full.svg" id="book-del-btn" alt="">
+    </div>`;
+    console.log(oldBookCard);
+    document.querySelector(".main-books-cont").replaceChild(element,oldBookCard);
+    bookCardEventListener(element,book);
 }
 
 function bookFiller(book){
