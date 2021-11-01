@@ -139,6 +139,10 @@ body{
     margin: 1rem 1.5rem;
 }
 
+.book-card button{
+    cursor: pointer;
+}
+
 .book-card .book-name{
     font-size: 2rem;
     text-align: center;
