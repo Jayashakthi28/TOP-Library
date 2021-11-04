@@ -123,6 +123,13 @@ document.querySelector('.opacity-cont').addEventListener("click",()=>{
     document.querySelector('header').style.pointerEvents='unset';
 });
 
+document.querySelector('.add-collection-cont .close-icon-cont img').addEventListener("click",()=>{
+    document.querySelector(".opacity-cont").classList.remove('opacity-rem-bk-cont');
+    document.querySelector('.add-book-cont').classList.add('none');
+    document.querySelector('.add-collection-cont').classList.add('none');
+    document.querySelector('header').style.pointerEvents='unset';
+});
+
 pg_num_inp_cont[0].querySelector('input').addEventListener("input",()=>{
     if(pg_num_inp_cont[1].querySelector('input').value.length===0){
         pg_num_inp_cont[0].querySelector('input').value="";
