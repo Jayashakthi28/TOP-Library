@@ -346,6 +346,96 @@ body{
     color: var(--blue-dark);
 }
 
+
+
+.add-collection-cont{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--blue-dark);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    z-index: 9;
+    position: fixed;
+    min-width: 300px;
+    width: 500px;
+    height: 500px;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    padding: 1rem;
+    box-shadow: 0px 0px 15px var(--green);
+    border-radius: 20px;
+}
+
+
+.add-collection-cont h1{
+    margin: 1rem;
+    font-size: 1.8rem;
+}
+
+.new-collection-create{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    width: 100%;
+    border-bottom: 2px dotted var(--green);
+}
+
+.new-collection-create img{
+    user-select: none;
+    -webkit-user-drag: none;
+    cursor: pointer;
+    background-color: var(--green);
+    border-radius: 8px;
+    margin-left: 10px;
+}
+
+.new-collection-create input{
+    outline: none;
+    border: none;
+    height: 100%;
+    width: 300px;
+    background-color: transparent;
+    border-bottom: 2px solid var(--green);
+    color: var(--green);
+    font-size: 1.9rem;
+}
+
+.new-collection-create input::placeholder{
+    color: var(--green);
+}
+
+.new-collection-create input:focus{
+    border-bottom: 2px dashed var(--green);
+}
+
+.available-collections-cont{
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+}
+
+.collections-cont{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.4rem;
+}
+
+.collections-cont span{
+    font-size: 2rem;
+}
+
+.collections-cont input{
+    margin-right: 1rem;
+}
+
+
 .none{
     display: none;
 }
