@@ -3,8 +3,10 @@ let oldBook=null;
 let oldBookCard=null;
 const pg_num_inp_cont=document.querySelectorAll('.pages-inp-cont .book-det-inp');
 let library=null;
-let localBookArr=JSON.parse(localStorage.getItem("library"));
-(localBookArr!==null)?library=new libraryCls(localBookArr):library=new libraryCls();
+let localBookArr=JSON.parse(localStorage.getItem("book"));
+let localGroup=JSON.parse(localStorage.getItem("group")) || [];
+let currBook=null;
+(localBookArr!==null)?library=new libraryCls(localBookArr,localGroup):library=new libraryCls();
 
 /***************************Classes And Prototypes*************************/
 function bookCreator(){
@@ -13,17 +15,18 @@ function bookCreator(){
     this.comp_pages=arguments[2];
     this.tot_pages=arguments[3];
     this.comp_flag=arguments[4];
+    this.group=arguments[5];
 }
 
 function libraryCls(book=[],group=[]){
     this.book=book;
-    this.group=group
+    this.group=group;
 }
 
 libraryCls.prototype.addBook=function(book){
     this.book.push(book);
     let temp=JSON.stringify(this.book);
-    localStorage.setItem("library",temp);
+    localStorage.setItem("book",temp);
 }
 
 libraryCls.prototype.remBook=function(book){
@@ -32,7 +35,7 @@ libraryCls.prototype.remBook=function(book){
     });
     console.log(this.book);
     let temp=JSON.stringify(this.book);
-    localStorage.setItem("library",temp);
+    localStorage.setItem("book",temp);
 }
 
 libraryCls.prototype.updateBook=function(newBook,oldBook){
@@ -40,8 +43,9 @@ libraryCls.prototype.updateBook=function(newBook,oldBook){
         return b===oldBook;
     });
     this.book[i]=newBook;
+    this.book[i]['group']=oldBook['group']
     let temp=JSON.stringify(this.book);
-    localStorage.setItem("library",temp);
+    localStorage.setItem("book",temp);
     bookReplacer(newBook);
 }
 
@@ -51,7 +55,7 @@ libraryCls.prototype.bookCardUpdater=function(book,status,flag){
     });
     this.book[i][flag]=status;
     let temp=JSON.stringify(this.book);
-    localStorage.setItem("library",temp);
+    localStorage.setItem("book",temp);
 }
 
 mainBookFiller();
@@ -112,7 +116,12 @@ document.querySelector('#add-book-btn').addEventListener("click",()=>{
 
 document.querySelector('.add-book-cont .close-icon-cont img').addEventListener("click",addBookToggler);
 
-document.querySelector('.opacity-cont').addEventListener("click",addBookToggler);
+document.querySelector('.opacity-cont').addEventListener("click",()=>{
+    document.querySelector(".opacity-cont").classList.remove('opacity-rem-bk-cont');
+    document.querySelector('.add-book-cont').classList.add('none');
+    document.querySelector('.add-collection-cont').classList.add('none');
+    document.querySelector('header').style.pointerEvents='unset';
+});
 
 pg_num_inp_cont[0].querySelector('input').addEventListener("input",()=>{
     if(pg_num_inp_cont[1].querySelector('input').value.length===0){
@@ -121,7 +130,14 @@ pg_num_inp_cont[0].querySelector('input').addEventListener("input",()=>{
     }
 })
 
+
+
 document.querySelector('.add-book-cont button').addEventListener("click",submitTrigger);
+
+document.querySelector('.new-collection-create img').addEventListener("click",()=>{
+    if(document.querySelector(".new-collection-create input").value.trim().length===0) return;
+    addNewCollection();
+})
 
 function bookCardEventListener(card,book){
     const mainCont=document.querySelector(".main-books-cont");
@@ -176,6 +192,17 @@ function bookCardEventListener(card,book){
         }
         library.bookCardUpdater(book,val,'comp_pages');
     })
+
+    card.querySelector('#add-collection').addEventListener('click',()=>{
+        currBook=book;
+        document.querySelector('.opacity-cont').classList.toggle("opacity-rem-bk-cont");
+        document.querySelector("header").style.pointerEvents="none";
+        collectionCardFiller(book);
+        document.querySelector(".add-collection-cont").classList.toggle("none");
+        document.querySelectorAll(".available-collections-cont .collections-cont").forEach(d=>{
+            collectionCheckboxListener(d,book);
+        });
+    })
 }
 
 /*********************************************************************************/
@@ -206,7 +233,7 @@ function submitTrigger(){
     let comPages=document.querySelectorAll('.book-det-inp input')[2].value;
     let totPages=document.querySelectorAll('.book-det-inp input')[3].value;
     let comFlag=document.querySelector('.book-com-status-inp input').checked;
-    const newBook=new bookCreator(bkName,AuthName,comPages,totPages,comFlag);
+    const newBook=new bookCreator(bkName,AuthName,comPages,totPages,comFlag,[]);
     
     document.querySelectorAll('.book-det-inp').forEach(d=>{
         d.querySelector('input').value="";
@@ -231,7 +258,7 @@ function bookReplacer(book){
     <div class="page-cnt"><input type="number" value="${book['comp_pages']}">/&nbsp;<span class="tot-page">${book["tot_pages"]}</span></div>
     <button class="book-status-btn">${(book['comp_flag'])?"Completed":"Not Completed"}</button>
     <div class="book-icons-cnt">
-        <img src="./assets/folder_plus.svg" alt="">
+        <img src="./assets/folder_plus.svg" id="add-collection" alt="">
         <img src="./assets/edit.svg" id="book-edit" alt="">
         <img src="./assets/trash_full.svg" id="book-del-btn" alt="">
     </div>`;
@@ -248,7 +275,7 @@ function bookFiller(book){
     <div class="page-cnt"><input type="number" value="${book['comp_pages']}">/&nbsp;<span class="tot-page">${book["tot_pages"]}</span></div>
     <button class="book-status-btn">${(book['comp_flag'])?"Completed":"Not Completed"}</button>
     <div class="book-icons-cnt">
-        <img src="./assets/folder_plus.svg" alt="">
+        <img src="./assets/folder_plus.svg" id="add-collection" alt="">
         <img src="./assets/edit.svg" id="book-edit" alt="">
         <img src="./assets/trash_full.svg" id="book-del-btn" alt="">
     </div>`;
@@ -260,6 +287,68 @@ function mainBookFiller(){
     document.querySelector('.main-books-cont').innerHTML="";
     library.book.forEach(book=>{
         bookFiller(book);
+    })
+}
+
+function addNewCollection(){
+    let val=document.querySelector('.new-collection-create input').value.trim();
+    console.log(library);
+    if(library['group'].filter((temp)=>{
+        if(temp===val) return true;
+    }).length!==0) return;
+    library['group'].push(val);
+    let element=document.createElement('div');
+    element.classList.add('collections-cont');
+    element.innerHTML=`
+    <input type="checkbox" name="test" id="" value="${val}">
+    <span>${val}</span>`;
+    document.querySelector('.available-collections-cont').appendChild(element);
+    collectionCheckboxListener(element);
+    let temp=JSON.stringify(library['group']);
+    localStorage.setItem("group",temp);
+}
+
+function collectionCardFiller(book){
+    let temp="";
+    library['group'].forEach(d=>{
+        let arr=book['group'].filter((temp)=>{
+             if(temp===d){
+                 return true;
+             }
+        });
+       if(arr.length!==0){
+            temp+=`<div class="collections-cont">
+            <input type="checkbox" value="${d}" checked>
+            <span>${d}</span>
+        </div>`
+        }
+        else{
+            temp+=`<div class="collections-cont">
+            <input type="checkbox" value="${d}">
+            <span>${d}</span>
+        </div>`;
+        }
+    });
+    document.querySelector(".available-collections-cont").innerHTML=temp;
+}
+
+function collectionCheckboxListener(tag){
+    let i=library['book'].findIndex((t)=>{
+        return currBook=== t;
+    });
+    let book=library['book'][i];
+    tag.querySelector("input").addEventListener("click",()=>{
+        console.log("EnteringHere");
+        if(tag.querySelector("input").checked===true){
+            book['group'].push(tag.querySelector("input").value);
+        }
+        else{
+            book['group']=book['group'].filter(d=>{
+                if(d!==tag.querySelector('input').value) return true;
+            });
+        }
+        let temp=JSON.stringify(library['book']);
+        localStorage.setItem('book',temp);
     })
 }
 /******************************************* */
