@@ -58,6 +58,21 @@ libraryCls.prototype.bookCardUpdater=function(book,status,flag){
     localStorage.setItem("book",temp);
 }
 
+libraryCls.prototype.delGroup=function(group){
+    this.book.forEach(d=>{
+        d['group']=d['group'].filter((t)=>{
+            return t!==group;
+        });
+    })
+    this.group=this.group.filter((t)=>{
+        return t!==group;
+    });
+    let temp=JSON.stringify(this.book);
+    localStorage.setItem("book",temp);
+    temp=JSON.stringify(this.group);
+    localStorage.setItem('group',temp);
+}
+
 mainBookFiller();
 
 /***************************************************************************/
@@ -212,9 +227,79 @@ function bookCardEventListener(card,book){
     })
 }
 
+
+document.querySelector('#collections-btn').addEventListener('click',()=>{
+    document.querySelector('.main-books-cont').classList.add('none');
+    document.querySelector('.collection-cont').classList.remove('none');
+    collectionContainerFiller();
+});
+
+document.querySelector("#home-btn").addEventListener("click",()=>{
+    document.querySelector('.main-books-cont').classList.remove('none');
+    document.querySelector('.collection-cont').classList.add('none');
+    mainBookFiller();
+})
+
 /*********************************************************************************/
 
 /******************************************FUNCTIONS AND CALLBACKS************************************ */
+function collectionContainerFiller(){
+    document.querySelector('.collection-cont').innerHTML='';
+    library['group'].forEach(d=>{
+        let cnt=0;
+        library['book'].forEach(t=>{
+            if(t['group'].filter((temp)=>{
+                if(temp===d) return true;
+            }).length!==0) cnt++;
+        });
+        let element=document.createElement('div');
+        element.innerHTML=`<h1 class="collection-name">${d}</h1>
+        <div class="books-cnt"><span>${cnt}</span>&nbsp;<span>books</span></div>
+        <div class="collection-icons-cnt">
+            <img src="./assets/trash_full.svg" alt="">
+        </div>`;
+        element.classList.add('collection-card');
+        document.querySelector('.collection-cont').appendChild(element);
+        console.log(element);
+        collectionCardEventListener(element,d);
+    });
+}
+
+function collectionCardEventListener(element,group){
+    let toggler=0;
+    element.querySelector('img').addEventListener("click",()=>{
+        library.delGroup(group);
+        toggler=1;
+        document.querySelector('.collection-cont').removeChild(element);
+    });
+
+    element.addEventListener("click",()=>{
+        if(toggler===1) return;
+        console.log("Emtering hereee");
+        let arr=[];
+        library['book'].forEach(d=>{
+            d['group'].forEach(t=>{
+                if(t===group){
+                    arr.push(d);
+                    return;
+                }
+            });
+        });
+        document.querySelector('.main-books-cont').innerHTML=` <div class="close-icon-cont">
+        <img src="./assets/close_big.svg" class="add-book-close-icon" alt="">
+        </div>`;
+        document.querySelector('.main-books-cont .close-icon-cont img').addEventListener("click",()=>{
+            document.querySelector('.main-books-cont').classList.add('none');
+            document.querySelector('.collection-cont').classList.remove('none');
+        });
+        arr.forEach(d=>{
+            bookFiller(d);
+        });
+        document.querySelector('.main-books-cont').classList.remove('none');
+        document.querySelector('.collection-cont').classList.add('none');
+    })
+}
+
 function addBookToggler(){
     document.querySelector('.opacity-cont').classList.toggle("opacity-rem-bk-cont");
     document.querySelector('.add-book-cont').classList.toggle('none');
