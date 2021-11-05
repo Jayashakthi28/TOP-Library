@@ -104,23 +104,13 @@ body{
     justify-content: center;
     height: 100%;
     width: 100%;
+    min-height: 60px;
     flex-wrap: wrap;
     padding: 1rem;
     overflow: auto;
 }
 
 
-.opacity-cont{
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    display: none;
-}
-
-.opacity-rem-bk-cont{
-    display: flex !important;
-    background-color: #0b132bee;
-}
 
 
 
@@ -436,6 +426,92 @@ body{
 }
 
 
+
+/******************************/
+.collection-cont{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    flex-wrap: wrap;
+    padding: 1rem;
+    overflow: auto;
+}
+
+.collection-card{
+    background-color: var(--green);
+    border-radius: 2rem;
+    height: 200px;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0 0.5rem;
+    overflow: hidden;
+    padding-top: 1rem;
+    margin: 1rem 1.5rem;
+}
+
+.collection-card .collection-name{
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 100;
+}
+
+.collection-name::before{
+    content: '" ';
+}
+
+.collection-name::after{
+    content: ' "';
+}
+
+.collection-card .books-cnt{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'DM-Sans';
+    font-size: 1.5rem;
+}
+
+.collection-card .books-cnt span{
+    font-size: 1.3rem;
+    font-weight: 600;
+    font-family: 'DM-Sans';
+}
+
+.collection-icons-cnt{
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+}
+
+.collection-icons-cnt img{
+    cursor: pointer;
+    transform: translateY(150%);
+    transition: transform 0.2s ease;
+}
+
+.collection-card:hover .collection-icons-cnt img{
+    transform: translateY(0%);
+}
+/**********************************/
+
+
 .none{
     display: none;
+}
+
+.opacity-cont{
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    display: none;
+}
+
+.opacity-rem-bk-cont{
+    display: flex !important;
+    background-color: #0b132bee;
 }
